@@ -66,21 +66,77 @@ class Premium_Client(Client):
     def __init__(self, name, surname, balance, loyalty_point, children_number=0, gender='uncertain'):
         super().__init__(name, surname, balance, children_number, gender)
         self.loyalty_point = loyalty_point
+        self.total_loyalty_point=loyalty_point
+      
 
     def add_deposit(self, amount):
         super().add_deposit(amount)
         loyalty_point_earned = amount / 10
 
         self.loyalty_point += loyalty_point_earned
+        self.total_loyalty_point += loyalty_point_earned
 
-        if self.loyalty_point > 50:
-            self.balance += 100
-            self.loyalty_point -= 50
-            return(f"Congratulations! You've earned {loyalty_point_earned} loyalty points and received a bonus of {amount}. New balance: {self.balance}")
+        while( self.loyalty_point > 50):
+            count=self.loyalty_point//50
+            self.balance += 100*count
+            self.loyalty_point -= 50*count
+            print(f"Congratulations! You've earned {loyalty_point_earned} loyalty points and received a bonus of {100*count} , New balance: {self.balance}")
+        if self.total_loyalty_point > 1000:
+
+            print("Congratulations! now you are a vip member")
+            self.__class__ = VIP
+           
+
+      
 
 
-pclt = Premium_Client('Danial', 'Melmav', 15000, 0)
+class VIP(Client):
+    def __init__(self, name, surname, balance, loyalty_point, total_loyalty_point,children_number=0, gender='uncertain'):
+        
+        print("VIP init")
+    def add_deposit(self,amount):
+     
+        loyalty_point_earned = amount / 10
 
-print(pclt.add_deposit(400))
+        self.loyalty_point += loyalty_point_earned
+        self.total_loyalty_point += loyalty_point_earned
+    
+        while( self.loyalty_point > 50):
+            count=self.loyalty_point//50
+            self.balance += 100*count
+            self.loyalty_point -= 50*count
+            print(f"Congratulations! You've earned {loyalty_point_earned} loyalty points and received a bonus of {100*count} , New balance: {self.balance}")
+            
+
+        level="bronz"
+        coef=1.01
+        if self.total_loyalty_point>2000:
+            level="silver"
+            coef=1.02
+        if self.total_loyalty_point>3000:
+            level="gold"
+            coef=1.03
+        self.balance+=amount*coef
+        Client.total_balance+=amount*coef
+        return (f'Your balance is updated , {self.balance}. Because of you are a {level} member, you earn extra {amount*(coef-1):.2f} money')
+
+
+pclt = Premium_Client('Danial', 'Melmav', 1500, 120)
+clt= Client("john", "smith",7000,3,"man")
+
+clt2= Client("Jane", "doe", 2000)
+pclt2 = Premium_Client('Danial2', 'Melmav2', 15000, 0)
+pclt3 = Premium_Client('Danial', 'Melmav', 15000, 0)
+
+print(pclt.add_deposit(500))
 print(pclt.balance)
 print(pclt.loyalty_point)
+
+print(pclt.total_loyalty_point)
+
+
+
+
+
+
+
