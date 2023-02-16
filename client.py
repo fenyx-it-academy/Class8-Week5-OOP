@@ -90,7 +90,7 @@ class Premium_Client(Client):
 
         if 50 <= self.loyalty_point <= 1000:
             self.balance += 100
-            self.loyalty_point -= 50
+            self.loyalty_point += 50
             return(f"Congratulations! You've earned {loyalty_point_earned} loyalty points and received a bonus of {amount}. New balance: {self.balance}")
 
         if self.loyalty_point > 1000 :
@@ -98,7 +98,7 @@ class Premium_Client(Client):
             VIP_Init =  Vip_Client(self.name, self.surname, self.balance)
             VIP_Init.add_deposit(amount)
             # print ("you are now VIP!")
-            return VIP_Init
+            return Vip_Client(self.name, self.surname, self.balance) #VIP_Init
 
 
             #self.make_into_vip()
@@ -159,6 +159,7 @@ pClient5 = Premium_Client("Bahadir", "B", 100)
 # if we add a large enough test deposit, the user will gain enough loyalty_point to become VIP
 # you can test this by making a small deposite (smaller than 20000)
 pClient1 = pClient1.add_deposit(20000)
+
 
 # Now, if the user did in fact become VIP, he should have "level" attribute assigned
 # and it should print "bronze"
