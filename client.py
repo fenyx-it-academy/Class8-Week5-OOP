@@ -99,6 +99,7 @@ class Vip_Client(Client):
 
 
     def add_deposit(self, amount):
+        #How can we use Premium_Client.add_deposit(amount) in this time???
         # Copy of Premium_class.add_deposit until "VIP bonus"
         super().add_deposit(amount)
         loyalty_point_earned = amount / 10
@@ -135,3 +136,4 @@ pclt = Premium_Client('Daniel', 'Melmav', 15000, 0)
 pclt1 = Premium_Client('Mary', 'Smith', 3000, 900)
 pclt1.add_deposit(2000)
 pclt1.add_deposit(10000)
+
