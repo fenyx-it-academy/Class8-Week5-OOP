@@ -74,9 +74,29 @@ class Client:
 
 
 class Premium_Client(Client):
+
     def __init__(self, name, surname, balance, loyalty_point=0, children_number=0, gender='uncertain'):
         super().__init__(name, surname, balance, children_number, gender)
         self.loyalty_point = loyalty_point
+
+        if self.loyalty_point > 1000 :
+
+            self.make_to_VIP(self.name, self.surname, self.balance)
+            #self.__class__ = Vip_Client
+            #Vip_Client(self.name, self.surname, self.balance)
+
+
+            #VIP_Init =  Vip_Client(self.name, self.surname, self.balance)
+            #VIP_Init.add_deposit(amount)
+            # print ("you are now VIP!")
+            #print ("ffffffffff")
+
+            #do.__init__(self.name, self.surname, self.balance)
+            #print (do.level)
+
+            #self.make_into_vip()
+            #Vip_Client(self.name, self.surname, self.balance)
+
 
         #if self.loyalty_point > 1000 :
         #    VIP_Init =  Vip_Client(self.name, self.surname, self.balance)
@@ -96,20 +116,26 @@ class Premium_Client(Client):
         if self.loyalty_point > 1000 :
             
             VIP_Init =  Vip_Client(self.name, self.surname, self.balance)
-            VIP_Init.add_deposit(amount)
-            # print ("you are now VIP!")
-            return Vip_Client(self.name, self.surname, self.balance) #VIP_Init
+            return VIP_Init.add_deposit(amount)
 
+
+            # print ("you are now VIP!")
+            #return Vip_Client(self.name, self.surname, self.balance) #VIP_Init
 
             #self.make_into_vip()
             #return super(Vip).Vip_Client(self.name, self.surname, self.balance).Vip.add_deposit(99) # init a VIP client?????
-            
-            
+  
+    def make_to_VIP(self, name, surname, balance, level="bronze") :
 
-    #def make_into_vip (self):
-    #    print ("You are VIP now!!!")
-        #vip = Vip_Client(self.name, self.surname, self.balance)
-        
+        #pass
+        #self.__class__ = Vip_Client
+
+
+        self.level = level
+        self.bonus_rates = {'gold': 0.03, 'silver': 0.02, 'bronze': 0.01}
+
+        #return Vip_Client(self.name, self.surname, self.balance)
+
 
     
         
@@ -117,8 +143,10 @@ class Premium_Client(Client):
 class Vip_Client (Client):
     def __init__(self, name, surname, balance, level="bronze", children_number=0, gender='uncertain'):
         super().__init__(name, surname, balance, children_number, gender)
+        
         self.level = level
         self.bonus_rates = {'gold': 0.03, 'silver': 0.02, 'bronze': 0.01}
+        #print ("2222222222222")
 
     def add_deposit(self, amount):
         super().add_deposit(amount)
@@ -145,7 +173,7 @@ client5 = Client("Bahadir", "B", 1000)
 
 
 # Init premium clients for testing
-pClient1 = Premium_Client("Ramy", "Aaron", 1000) #lotalty points var is optional, 0 by default
+pClient1 = Premium_Client("Ramy", "Aaron", 1000, 10000) #lotalty points var is optional, 0 by default
 pClient2 = Premium_Client("Abdulrhman", "A", 100)
 pClient3 = Premium_Client("Burhan", "B", 100)
 pClient4 = Premium_Client("Mohammad", "M", 100)
@@ -158,12 +186,15 @@ pClient5 = Premium_Client("Bahadir", "B", 100)
 # Adding loyalty points by making a test deposit
 # if we add a large enough test deposit, the user will gain enough loyalty_point to become VIP
 # you can test this by making a small deposite (smaller than 20000)
-pClient1 = pClient1.add_deposit(20000)
+#pClient1 = pClient1.add_deposit(20000)
 
 
 # Now, if the user did in fact become VIP, he should have "level" attribute assigned
 # and it should print "bronze"
 # however, if the print function below gives an error then the user is NOT VIP
-print (pClient1.level )
+#print (pClient1.add_deposit(100) )
+print (f" this premuim client became VIP at level: {pClient1.level}" )
+print (f"loyalty points: {pClient1.loyalty_point}" )
+
 
 
