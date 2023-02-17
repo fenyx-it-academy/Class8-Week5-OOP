@@ -21,15 +21,15 @@ class Client:
         if children_number > 0:
             self.add_child_bonus()
 
-    def add_deposit(self, amount):
+    def add_deposit_cl(self, amount):
         self.balance += amount
         Client.total_balance += amount
-        return (f'Your balance is updated , {self.balance}')
+        return (f'Dear {self.name}. Your balance is updated , {self.balance}')
 
     def withdraw_deposit(self, amount):
         self.balance -= amount
         Client.total_balance -= amount
-        return(f"Your balance is updated,  {self.balance}")
+        return(f"Dear {self.name}. Your balance is updated,  {self.balance}")
 
     def payment_rent(self):
         self.balance -= self.rent
@@ -49,7 +49,7 @@ class Client:
                 self.balance -= amount
 
     def add_child_bonus(self):
-        self.add_deposit(self.children_number * Client.bonus)
+        self.add_deposit_cl(self.children_number * Client.bonus)
 
     def add_interest(self):
         self.balance *= Client.interest_rate
@@ -70,7 +70,7 @@ class Premium_Client(Client):
         self.level = None
 
     def add_deposit(self, amount):
-        super().add_deposit(amount)
+        super().add_deposit_cl(amount)
         loyalty_point_earned = amount / 10
 
         self.loyalty_point += loyalty_point_earned
@@ -86,33 +86,19 @@ class Premium_Client(Client):
         if self.total_point > 1000 and self.level == None:
             self.level = 'bronze'
             self.__class__ = Vip_Client     # transfer between classes
-            print('You are a VIP client now.')
+            print(f'{self.name} are a VIP client now.')
 
 
 
-class Vip_Client(Client):
+class Vip_Client(Premium_Client):
     def __init__(self, name, surname, balance, loyalty_point, total_point, children_number=0, gender='uncertain'):
-        super().__init__(name, surname, balance, children_number, gender)
-        self.loyalty_point = loyalty_point
-        self.total_point = total_point
+        super().__init__(name, surname, balance, loyalty_point, total_point, children_number, gender, )
         self.level = "bronze"
 
 
     def add_deposit(self, amount):
-        #How can we use Premium_Client.add_deposit(amount) in this time???
-        # Copy of Premium_class.add_deposit until "VIP bonus"
+
         super().add_deposit(amount)
-        loyalty_point_earned = amount / 10
-
-        self.loyalty_point += loyalty_point_earned
-        self.total_point += loyalty_point_earned
-
-        local_amount = 0
-        while self.loyalty_point >= 50:
-            self.balance += 100
-            local_amount += 100
-            self.loyalty_point -= 50
-        print(f"Congratulations! You've earned {loyalty_point_earned} loyalty points and received a bonus of {local_amount}. New balance: {self.balance}")
         
         # VIP bonus.
         # set levels of rate:
@@ -123,7 +109,8 @@ class Vip_Client(Client):
         }
 
         # bonus payment:
-        super().add_deposit(amount * coefficient[self.level])
+        super().add_deposit_cl(amount * coefficient[self.level])
+        print(f'Bonus payment is {amount * coefficient[self.level]}')
         if 2000 < self.total_point < 3000:
             self.level = 'silver'
             print(f'{self.name} have a Silver VIP level.')
@@ -136,4 +123,6 @@ pclt = Premium_Client('Daniel', 'Melmav', 15000, 0)
 pclt1 = Premium_Client('Mary', 'Smith', 3000, 900)
 pclt1.add_deposit(2000)
 pclt1.add_deposit(10000)
-
+print(pclt1.account_number)
+print(pclt1.withdraw_deposit(2000))
+pclt.send_money(pclt1.account_number, 5000)
