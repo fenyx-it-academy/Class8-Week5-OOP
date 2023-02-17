@@ -39,14 +39,13 @@ class Client:
         if self.balance < amount:
             return 'balance is not enough'
         else:
-            client_object = [obj for obj in globals().values() if isinstance(
-                obj, Client) and obj.account_number == receiver_account_number]
-            if len(client_object) == 0:
-                print('client not found')
-            else:
-                reciever_object = client_object[0]
-                reciever_object.balance += amount
-                self.balance -= amount
+            client_list = [obj for obj in globals().values() if isinstance(obj, Client)]
+            for receiver_client in client_list:
+                if receiver_client.account_number == receiver_account_number:
+                    receiver_client.balance += amount
+                    self.balance -= amount
+                    return f"{amount} EUR was sent to {receiver_client.name} from {self.name}"
+
 
     def add_child_bonus(self):
         self.add_deposit(self.children_number * Client.bonus)
@@ -63,9 +62,17 @@ class Client:
 
 
 class Premium_Client(Client):
-    def __init__(self, name, surname, balance, loyalty_point, children_number=0, gender='uncertain'):
+
+    def __init__(self, name, surname, balance, loyalty_point=0, children_number=0, gender='uncertain'):
         super().__init__(name, surname, balance, children_number, gender)
         self.loyalty_point = loyalty_point
+
+        if self.loyalty_point > 1000 :
+
+            self.level = 'bronze'
+            self.bonus_rates = {'gold': 0.03, 'silver': 0.02, 'bronze': 0.01}
+            self.__class__ = Vip_Client
+
 
     def add_deposit(self, amount):
         super().add_deposit(amount)
@@ -73,14 +80,70 @@ class Premium_Client(Client):
 
         self.loyalty_point += loyalty_point_earned
 
-        if self.loyalty_point > 50:
+        if 50 <= self.loyalty_point <= 1000:
             self.balance += 100
-            self.loyalty_point -= 50
+            self.loyalty_point += 50
             return(f"Congratulations! You've earned {loyalty_point_earned} loyalty points and received a bonus of {amount}. New balance: {self.balance}")
 
+        if self.loyalty_point > 1000 :
+            
+            VIP_Init =  Vip_Client(self.name, self.surname, self.balance)
+            return VIP_Init.add_deposit(amount)
 
-pclt = Premium_Client('Danial', 'Melmav', 15000, 0)
 
-print(pclt.add_deposit(400))
-print(pclt.balance)
-print(pclt.loyalty_point)
+            # print ("you are now VIP!")
+            #return Vip_Client(self.name, self.surname, self.balance) #VIP_Init
+
+            #self.make_into_vip()
+            #return super(Vip).Vip_Client(self.name, self.surname, self.balance).Vip.add_deposit(99) # init a VIP client?????
+  
+
+class Vip_Client (Client):
+    def __init__(self, name, surname, balance, level="bronze", children_number=0, gender='uncertain'):
+        super().__init__(name, surname, balance, children_number, gender)
+
+    def add_deposit(self, amount):
+        super().add_deposit(amount)
+        self.balance += amount * self.bonus_rates[self.level]
+        return (f'you got {self.bonus_rates[self.level]} bonus because you are {self.level} level, total balance now is {self.balance}')
+    
+    def send_money(self, receiver_account_number, amount):
+    
+       return super().send_money(receiver_account_number, amount)
+
+
+###################################################################################
+###################################################################################
+############## testing!!
+###################################################################################
+###################################################################################
+
+# Init normal clients for testing
+client1 = Client("Ramy", "Aaron", 1000, 1)
+client2 = Client("Abdulrhman", "A", 1000)
+client3 = Client("Burhan", "B", 1000)
+client4 = Client("Mohammad", "M", 1000)
+client5 = Client("Bahadir", "B", 1000)
+
+
+# Init premium clients for testing
+pClient1 = Premium_Client("Ramy", "Aaron", 1000, 10000) #lotalty points var is optional, 0 by default
+pClient2 = Premium_Client("Abdulrhman", "A", 100)
+pClient3 = Premium_Client("Burhan", "B", 100)
+pClient4 = Premium_Client("Mohammad", "M", 100)
+pClient5 = Premium_Client("Bahadir", "B", 100)
+
+
+
+# Test if the premium user is VIP ?
+
+
+print (pClient1.add_deposit(100) )
+print (pClient1.level)
+print (pClient1.loyalty_point)
+
+
+# sendin from VIP user to normal user
+print (pClient1.send_money(client2.account_number, 100))
+
+
