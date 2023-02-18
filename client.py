@@ -47,15 +47,19 @@ class Client:
                 reciever_object = client_object[0]
                 reciever_object.balance += amount
                 self.balance -= amount
+                print(f"You sent {amount} to {reciever_object.name} {reciever_object.surname}, new balance: {self.balance}")
 
     def add_child_bonus(self):
         self.add_deposit(self.children_number * Client.bonus)
 
     def add_interest(self):
         self.balance *= Client.interest_rate
+        
+    def print(self):
+        print(self.account_number, self.__class__.__name__, self.balance, sep='\t')
 
     @classmethod
-    def average_balacance(cls):
+    def average_balance(cls):
         if cls.num_client == 0:
             return 0
         else:
@@ -66,21 +70,40 @@ class Premium_Client(Client):
     def __init__(self, name, surname, balance, loyalty_point, children_number=0, gender='uncertain'):
         super().__init__(name, surname, balance, children_number, gender)
         self.loyalty_point = loyalty_point
+        self.spent_loyalty_point = 0            
 
     def add_deposit(self, amount):
         super().add_deposit(amount)
         loyalty_point_earned = amount / 10
-
         self.loyalty_point += loyalty_point_earned
+        if self.loyalty_point + self.spent_loyalty_point >= 1000:
+            self.upgradeTo_Vip()
 
         if self.loyalty_point > 50:
             self.balance += 100
             self.loyalty_point -= 50
-            return(f"Congratulations! You've earned {loyalty_point_earned} loyalty points and received a bonus of {amount}. New balance: {self.balance}")
+            print(f"Congratulations! You've earned {loyalty_point_earned} loyalty points and received a bonus of {amount}. New balance: {self.balance}")
+            self.spent_loyalty_point += 50         
+        
+    def upgradeTo_Vip(self):
+        self._vip_level = "Bronz"
+        self.__class__ = Vip_Client
+        
+class Vip_Client(Premium_Client):                  
+    def add_deposit(self, amount):
+        bonus_ratio = {
+            "Bronz": 0.01,
+            "Silver": 0.02,
+            "Gold": 0.03
+        }
+        amount += amount * bonus_ratio[self.vip_level]
+        super().add_deposit(amount)
+      
+pclt = Premium_Client('Danial', 'Melmav', 1500,0)
+clt = Client('Ahmed', 'Aslan', 3000, 1)
 
-
-pclt = Premium_Client('Danial', 'Melmav', 15000, 0)
-
-print(pclt.add_deposit(400))
-print(pclt.balance)
-print(pclt.loyalty_point)
+pclt.add_deposit(8000)
+pclt.print()
+pclt.add_deposit(4000)
+pclt.print()
+pclt.send_money(clt.account_number, 3000)
