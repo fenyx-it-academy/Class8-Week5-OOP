@@ -2,85 +2,91 @@ import random
 
 
 class Client:
-    bonus = 300
-    interest_rate = 1.05
-    num_client = 0
-    total_balance = 0
-
-    def __init__(self, name, surname, balance, children_number=0, gender='uncertain'):
+    def __init__(self, name, surname, balance, gender, account_number, children_number, loyalty_point=0):
         self.name = name
         self.surname = surname
         self.balance = balance
-        self.email = f'{name.lower()}.{surname}@gmail.com'
         self.gender = gender
-        self.account_number = (f"ABN{random.randint(1000000000,9999999999)}")
+        self.account_number = account_number
         self.children_number = children_number
-        Client.num_client += 1
-        Client.total_balance += balance
+        self.loyalty_point = loyalty_point
 
-        if children_number > 0:
-            self.add_child_bonus()
+    def __str__(self):
+        return f'{self.name} {self.surname}, {self.balance}, {self.children_number}'
 
     def add_deposit(self, amount):
         self.balance += amount
-        Client.total_balance += amount
-        return (f'Your balance is updated , {self.balance}')
 
-    def withdraw_deposit(self, amount):
-        self.balance -= amount
-        Client.total_balance -= amount
-        return(f"Your balance is updated,  {self.balance}")
-
-    def payment_rent(self):
-        self.balance -= self.rent
-        return(f'Your rent is paid , {self.balance}')
-
-    def send_money(self, receiver_account_number, amount):
-        if self.balance < amount:
-            return 'balance is not enough'
+    def send_money(self, other, amount):
+        if amount <= self.balance:
+            self.balance -= amount
+            other.balance += amount
+            return True
         else:
-            client_object = [obj for obj in globals().values() if isinstance(
-                obj, Client) and obj.account_number == receiver_account_number]
-            if len(client_object) == 0:
-                print('client not found')
-            else:
-                reciever_object = client_object[0]
-                reciever_object.balance += amount
-                self.balance -= amount
-
-    def add_child_bonus(self):
-        self.add_deposit(self.children_number * Client.bonus)
-
-    def add_interest(self):
-        self.balance *= Client.interest_rate
-
-    @classmethod
-    def average_balacance(cls):
-        if cls.num_client == 0:
-            return 0
-        else:
-            return cls.total_balance / cls.num_client
-
+            return False
 
 class Premium_Client(Client):
-    def __init__(self, name, surname, balance, loyalty_point, children_number=0, gender='uncertain'):
-        super().__init__(name, surname, balance, children_number, gender)
-        self.loyalty_point = loyalty_point
+    def __init__(self, name, surname, balance, gender, account_number, children_number, loyalty_point=0):
+        super().__init__(name, surname, balance, gender, account_number, children_number, loyalty_point)
 
+    def add_loyalty_point(self, amount):
+        self.loyalty_point += amount
+        if self.loyalty_point >= 1000:
+            self.convert_to_vip()
+
+    def convert_to_vip(self):
+        vip_client = VipClient(self.name, self.surname, self.balance, self.gender, self.account_number, self.children_number, self.loyalty_point)
+        del self.__dict__
+        self.__class__ = vip_client.__class__
+        self.__dict__ = vip_client.__dict__
+
+class VipClient(Client):
+    def __init__(self, name, surname, balance, gender, account_number, children_number, loyalty_point=0):
+        super().__init__(name, surname, balance, gender, account_number, children_number, loyalty_point)
+        self.level = self.get_level()
+    
+    def get_level(self):
+        if self.loyalty_point >= 10000:
+            return 'Gold'
+        elif self.loyalty_point >= 5000:
+            return 'Silver'
+        else:
+            return 'Bronze'
+    
     def add_deposit(self, amount):
-        super().add_deposit(amount)
-        loyalty_point_earned = amount / 10
+        if self.level == 'Gold':
+            amount *= 1.03
+        elif self.level == 'Silver':
+            amount *= 1.02
+        elif self.level == 'Bronze':
+            amount *= 1.01
+        self.balance += amount
 
-        self.loyalty_point += loyalty_point_earned
+    def __del__(self):
+        self.name = None
+        self.surname = None
+        self.balance = None
+        self.gender = None
+        self.account_number = None
+        self.children_number = None
+        self.loyalty_point = None
 
-        if self.loyalty_point > 50:
-            self.balance += 100
-            self.loyalty_point -= 50
-            return(f"Congratulations! You've earned {loyalty_point_earned} loyalty points and received a bonus of {amount}. New balance: {self.balance}")
+if __name__ == '__main__':
+    # Example usage
+    clt = Client('Ali', 'Ahmed', 7500, 'Male', 1001, 1)
+    print(clt)
 
+    pclt = Premium_Client('Danial', 'Melmav', 15000, 'Male', 1002, 2)
+    print(pclt)
 
-pclt = Premium_Client('Danial', 'Melmav', 15000, 0)
+    pclt.add_deposit(1000)
+    print(pclt.balance)
+    print(pclt.loyalty_point)
 
-print(pclt.add_deposit(400))
-print(pclt.balance)
-print(pclt.loyalty_point)
+    pclt.add_loyalty_point(400)
+    print(pclt.loyalty_point)
+
+    pclt.add_loyalty_point(600)
+    print(pclt.level)
+
+    vclt = zip
