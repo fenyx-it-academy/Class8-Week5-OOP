@@ -62,6 +62,22 @@ class Client:
             return cls.total_balance / cls.num_client
 
 
+class Vip_Client(Client):
+    def __init__(self, name, surname, balance,level):
+     super().__init__(name,surname,balance)
+     self.level = level
+
+    def add_deposit_vip(self, amount):
+        if self.level == "gold":
+         amount += (amount * 0.03)
+         
+        elif self.level == "silver":
+            amount += (amount * 0.02)
+        else:
+            amount += (amount * 0.01)
+        self.balance += amount
+        return (f'Your balance is updated , {self.balance}')
+          
 class Premium_Client(Client):
     def __init__(self, name, surname, balance, loyalty_point, children_number=0, gender='uncertain'):
         super().__init__(name, surname, balance, children_number, gender)
@@ -76,11 +92,34 @@ class Premium_Client(Client):
         if self.loyalty_point > 50:
             self.balance += 100
             self.loyalty_point -= 50
-            return(f"Congratulations! You've earned {loyalty_point_earned} loyalty points and received a bonus of {amount}. New balance: {self.balance}")
-
-
+            print(f"Congratulations! You've earned {loyalty_point_earned} loyalty points and received a bonus of {amount}. New balance: {self.balance}")
+ 
+        if self.loyalty_point > 1000:
+         self.vip = Vip_Client(self.name, self.surname, self.balance, level='bronze')
+         print("Congratulations! You are now Vip Client, because you loyalty points are more than 1000")
+         print("Your Vip balance",self.vip.balance)
+         print(self.vip.add_deposit_vip(100))
+         #super().send_money("ABN1000000001", 50)
+         self._del_()
+         
+         
+    def _del_(self):
+        self.name = None
+        self.surname = None
+        self.balance = None
+        self.gender = None
+        self.account_number = None
+        self.children_number = None
+        self.loyalty_point = None
+         
 pclt = Premium_Client('Danial', 'Melmav', 15000, 0)
 
-print(pclt.add_deposit(400))
+print(pclt.add_deposit(11400))
 print(pclt.balance)
 print(pclt.loyalty_point)
+
+
+
+
+
+
