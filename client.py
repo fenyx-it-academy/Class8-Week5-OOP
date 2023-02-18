@@ -72,15 +72,69 @@ class Premium_Client(Client):
         loyalty_point_earned = amount / 10
 
         self.loyalty_point += loyalty_point_earned
+            
+        if self.loyalty_point > 1000:
+                    self.__class__ = VipClient
+                    self.balance += 100 
+                    self.loyalty_point -= 50
+                    return (f'Your loyalty points are {loyalty_point_earned} which is more than 1000 therefore you have been upgraded to VIP Class. your balance is {self.balance}')
 
         if self.loyalty_point > 50:
-            self.balance += 100
+            self.balance += 100 
             self.loyalty_point -= 50
-            return(f"Congratulations! You've earned {loyalty_point_earned} loyalty points and received a bonus of {amount}. New balance: {self.balance}")
+            return(f"Congratulations! You've earned {loyalty_point_earned} loyalty points and received a bonus of {100}. New balance: {self.balance}")
+        
+        
 
+        
+    def _del_(self):
+        self.name = None
+        self.surname = None
+        self.balance = None
+        self.gender = None
+        self.account_number = None
+        self.children_number = None
+        self.loyalty_point = None
 
+class VipClient(Client):
+    deposit_count = 0
+
+    
+    def add_deposit(self, amount):
+        VipClient.deposit_count +=1
+        super().add_deposit(amount)
+        extra = amount
+        
+        
+        
+        if VipClient.deposit_count >= 0 and VipClient.deposit_count < 5:
+            extra *= 0.01
+            self.balance += extra
+            return(f" You're a bronze vip client, {amount} was diposited to your account with a bonus of {extra}. New balance: {self.balance}")
+        if VipClient.deposit_count >= 5 and VipClient.deposit_count <10 :
+            extra *= 0.02
+            self.balance += extra
+            return(f" You're a silver vip client, {amount} was diposited to your account with a bonus of {extra}. New balance: {self.balance}")
+        elif VipClient.deposit_count > 10:
+            extra *= 0.03
+            self.balance += extra
+            return(f" You're a gold vip client, {amount} was diposited to your account with a bonus of {extra}. New balance: {self.balance}")
+            
+        VipClient.deposit_count +=1
+    
+    def send_money(self, receiver_account_number, amount):
+        return super().send_money(receiver_account_number, amount)
+            
+        
+    
+clt = Client('Jack', 'Nilson', 1000)
 pclt = Premium_Client('Danial', 'Melmav', 15000, 0)
-
-print(pclt.add_deposit(400))
+pclt2 = Premium_Client('Lina', 'Mark', 40000,0)
+print(pclt.add_deposit(11000))
+print(pclt.add_deposit(1000))
+pclt.send_money(pclt2.account_number,2000)
 print(pclt.balance)
-print(pclt.loyalty_point)
+print(pclt2.balance)
+
+
+
