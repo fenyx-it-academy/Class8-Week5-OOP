@@ -78,9 +78,61 @@ class Premium_Client(Client):
             self.loyalty_point -= 50
             return(f"Congratulations! You've earned {loyalty_point_earned} loyalty points and received a bonus of {amount}. New balance: {self.balance}")
 
+# Vip_Client = type('Vip_Client',(Premium_Client,),{'__init__': }) #I would like to do that way, but i couldn't ((
+class Vip_Client(Premium_Client):
+    def __init__(self, name, surname, balance, loyalty_point, loyalty_level = 'VIP_bronz', children_number=0, gender='uncertain'):
+        super().__init__(name, surname, balance, loyalty_point, children_number, gender)
+        self.loyalty_level = loyalty_level
+        
+        
+        if self.loyalty_point > 1000:
+            self.add_VIP()  
+        else:
+            self._del_()
+        
+    def _del_(self):
+        self.name = None
+        self.surname = None
+        self.balance = None
+        self.gender = None
+        self.account_number = None
+        self.children_number = None
+        self.loyalty_point = None
+    
+    def add_VIP(self):
+        self.loyalty_level = 'VIP_bronz'
+        if self.loyalty_point > 2000:
+            self.loyalty_level = 'VIP_silver'
+        if self.loyalty_point > 3000:
+            self.loyalty_level = 'VIP_gold'
+        return(f"Congratulations! You've {self.loyalty_level} client now!")
 
+    def add_deposit(self, amount):
+        super().add_deposit(amount)
+        if self.loyalty_level == 'VIP_bronz':
+            bonus_vip=amount*0.01
+            
+        elif self.loyalty_level == 'VIP_silver':
+            bonus_vip=amount*0.02
+            
+        elif self.loyalty_level == 'VIP_gold':
+            bonus_vip=amount*0.03
+            
+        self.balance += bonus_vip
+        return(f"Congratulations! You've resived {bonus_vip} as a VIP client!")
+
+vclt1= Vip_Client('Maria','Rich', 200000, 3500)
+clt = Client('Elen','Ko',3000)
+vclt= Vip_Client('Omar','Gugo', 200000, 5000)
 pclt = Premium_Client('Danial', 'Melmav', 15000, 0)
 
-print(pclt.add_deposit(400))
-print(pclt.balance)
-print(pclt.loyalty_point)
+# print(pclt.add_deposit(400))
+# print(pclt.balance)
+# print(pclt.loyalty_point)
+# print(vclt1.loyalty_level)
+# print (vclt1.add_deposit(5000))
+# print(clt.balance)
+# print(vclt.balance)
+# vclt.send_money(clt.account_number,300)
+# print(clt.balance)
+# print(vclt.balance)
